@@ -1,5 +1,5 @@
 from flask import Flask
-
+from random import choice  # Импортируем функцию choice из модуля random
 
 app = Flask (__name__)
 app.config['JSON_AS_ASCII'] = False
@@ -43,6 +43,11 @@ def get_quotes_count():
     count = len(quotes)
     return {"count": count}
 
+
+@app.route("/quotes/random")
+def get_random_quote():
+    random_quote = choice(quotes)  # Выбираем случайную цитату из списка
+    return random_quote
 
 @app.route("/")
 def hello_world():
