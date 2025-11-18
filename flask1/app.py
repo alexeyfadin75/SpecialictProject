@@ -24,10 +24,24 @@ quotes =[
   } 
 ]
 
-
 @app.route("/quotes")
-def quotes
-  return quotes
+def get_quotes(): 
+    return quotes
+
+@app.route("/quotes/<int:quote_id>")
+def get_quote_by_id(quote_id):
+    # Ищем цитату по ID
+    for quote in quotes:
+        if quote["id"] == quote_id:
+            return quote
+    # Если цитата не найдена, возвращаем сообщение об ошибке
+    return {"error": f"Цитата с id={quote_id} не найдена"}, 404
+
+@app.route("/quotes/count")
+def get_quotes_count():
+    count = len(quotes)
+    return {"count": count}
+
 
 @app.route("/")
 def hello_world():
