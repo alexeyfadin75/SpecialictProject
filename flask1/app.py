@@ -1,5 +1,6 @@
 from flask import Flask
 from random import choice  # Импортируем функцию choice из модуля random
+from flask import request
 
 app = Flask (__name__)
 app.config['JSON_AS_ASCII'] = False
@@ -25,7 +26,7 @@ quotes =[
   } 
 ]
 
-@app.route("/quotes")
+@app.route("/quotes",  methods=['GET'])
 def get_quotes(): 
     return quotes
 
@@ -57,7 +58,11 @@ def hello_world():
 def about():
   return about_me
 
-
+@app.route("/quotes", methods=['POST'])
+def create_quote():
+  data = request.json
+  print("data = ", data)
+  return {}, 201
 
 if __name__=="__main__":
   app.run(debug=True)
