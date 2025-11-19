@@ -67,5 +67,13 @@ def create_quote():
   quotes.append(new_quote)
   return {}, 201
 
+@app.route("/quotes/<int:id>", methods=['DELETE'])
+def delete_quote(id):
+  # delete quote with id
+  for quote in quotes:
+      if quote["id"] == id:
+         quotes.remove(quote) 
+         return f"Quote with id {id} is deleted.", 200
+
 if __name__=="__main__":
   app.run(debug=True)
