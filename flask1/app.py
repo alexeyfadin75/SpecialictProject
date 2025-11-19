@@ -60,8 +60,11 @@ def about():
 
 @app.route("/quotes", methods=['POST'])
 def create_quote():
-  data = request.json
-  print("data = ", data)
+  new_quote = request.json
+  last_quote = quotes[-1] # последняя цитата в списке
+  new_id = last_quote["id"]+1
+  new_quote["id"]=new_id
+  quotes.append(new_quote)
   return {}, 201
 
 if __name__=="__main__":
