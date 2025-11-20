@@ -72,7 +72,7 @@ def create_quote():
 
 @app.route("/quotes/<int:id>", methods=['DELETE'])
 def delete_quote(id):
-  # delete quote with id
+  # удаляем цитату по ее id
   for quote in quotes:
       if quote["id"] == id:
          quotes.remove(quote) 
@@ -104,6 +104,35 @@ def edit_quote(id):
     
     # Если цитата не найдена
     return {"error": f"Цитата с id={id} не найдена"}, 404
+
+@app.route("/quotes/filter")
+def get_quotes_filter():
+    # Получаем все параметры запроса
+    filters = request.args.to_dict()
+    
+    if not filters:
+        return {"error": "Не указаны параметры фильтрации. Доступные параметры: author, rating"}, 400
+    
+    filtered_quotes = quotes.copy()
+    
+    # Применяем фильтры последовательно
+    for field, value in filters.items():
+        if field == "author":
+            # Flask автоматически декодирует URL-encoded строки
+            filtered_quotes = [quote for quote in filtered_quotes if quote["author"] == value]
+        elif field == "rating":
+            try:
+                rating_value = int(value)
+                filtered_quotes = [quote for quote in filtered_quotes if quote["rating"] == rating_value]
+            except ValueError:
+                return {"error": "Рейтинг должен быть числом"}, 400
+        else:
+            return {"error": f"Неизвестный параметр фильтра: {field}. Доступные параметры: author, rating"}, 400
+    
+    return {
+        "count": len(filtered_quotes),
+        "quotes": filtered_quotes
+    }
 
 if __name__=="__main__":
   app.run(debug=True)
