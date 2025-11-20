@@ -118,7 +118,7 @@ def get_quotes_filter():
     # Применяем фильтры последовательно
     for field, value in filters.items():
         if field == "author":
-            # Flask автоматически декодирует URL-encoded строки
+
             filtered_quotes = [quote for quote in filtered_quotes if quote["author"] == value]
         elif field == "rating":
             try:
