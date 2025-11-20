@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, jsonify
 from random import choice  # Импортируем функцию choice из модуля random
 from flask import request
 
@@ -14,15 +14,18 @@ about_me ={
 quotes =[
   {"id":1, 
    "author":"Махатма Ганди",
-   "text":"Грамм собственного опыта стоит дороже, чем тонны чужих наставлений"
+   "text":"Грамм собственного опыта стоит дороже, чем тонны чужих наставлений",
+   "rating":1
   },
   {"id":2, 
    "author":"Альберт Эйнштейн",
-   "text":"Жизнь — как вождение велосипеда. Чтобы сохранить равновесие, ты должен двигаться"
+   "text":"Жизнь — как вождение велосипеда. Чтобы сохранить равновесие, ты должен двигаться",
+   "rating":5
   }, 
   {"id":3, 
    "author":"Генри Форд",
-   "text":"Неудача — это просто возможность начать снова, но уже более мудро"
+   "text":"Неудача — это просто возможность начать снова, но уже более мудро",
+   "rating":4
   } 
 ]
 
@@ -73,7 +76,34 @@ def delete_quote(id):
   for quote in quotes:
       if quote["id"] == id:
          quotes.remove(quote) 
-         return f"Quote with id {id} is deleted.", 200
+         return jsonify({"message":f"Quote with id {id} is deleted."}), 200
+  return {"Error":f"Quote with id {id} not found"}, 404
+
+@app.route("/quotes/<int:id>", methods=['PUT'])
+def edit_quote(id):
+    new_data = request.json
+    
+    # Проверяем рейтинг, если он есть в запросе
+    if "rating" in new_data:
+        rating = new_data["rating"]
+        if not isinstance(rating, int) or rating < 1 or rating > 10:
+            return {"error": "Рейтинг должен быть целым числом от 1 до 10"}, 400
+    
+    # Ищем цитату по ID
+    for quote in quotes:
+        if quote["id"] == id:
+            # Обновляем только те поля, которые пришли в запросе
+            if "author" in new_data:
+                quote["author"] = new_data["author"]
+            if "text" in new_data:
+                quote["text"] = new_data["text"]
+            if "rating" in new_data:
+                quote["rating"] = new_data["rating"]
+            
+            return quote, 200
+    
+    # Если цитата не найдена
+    return {"error": f"Цитата с id={id} не найдена"}, 404
 
 if __name__=="__main__":
   app.run(debug=True)
